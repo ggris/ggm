@@ -22,6 +22,10 @@ template <typename T> inline T cvtt(float4 a);
 template <typename T> inline T cvt(int4 a);
 template <typename T> inline T cvt(int8 a);
 
+// set
+
+template <typename T> inline T setzero();
+
 // AVX
 
 // Arithmetic
@@ -108,6 +112,44 @@ inline double2 load(double const* mem_addr, long2 mask) { return _mm_maskload_pd
 inline double4 load(double const* mem_addr, long4 mask) { return _mm256_maskload_pd(mem_addr, mask); }
 inline float4 load(float const* mem_addr, int4 mask) { return _mm_maskload_ps(mem_addr, mask); }
 inline float8 load(float const* mem_addr, int8 mask) { return _mm256_maskload_ps(mem_addr, mask); }
+
+// store
+
+inline void stream(double* mem_addr, double4 a) { _mm256_stream_pd(mem_addr, a); }
+inline void stream(float* mem_addr, float8 a) { _mm256_stream_ps(mem_addr, a); }
+inline void stream(__m256i* mem_addr, __m256i a) { _mm256_stream_si256(mem_addr, a); }
+
+inline void store(double* mem_addr, double4 a) { _mm256_store_pd(mem_addr, a); }
+inline void store(float* mem_addr, float8 a) { _mm256_store_ps(mem_addr, a); }
+inline void store(__m256i* mem_addr, __m256i a) { _mm256_store_si256(mem_addr, a); }
+inline void storeu(double* mem_addr, double4 a) { _mm256_storeu_pd(mem_addr, a); }
+inline void storeu(float* mem_addr, float8 a) { _mm256_storeu_ps(mem_addr, a); }
+inline void storeu(__m256i* mem_addr, __m256i a) { _mm256_storeu_si256(mem_addr, a); }
+
+inline void storeu(double* hiaddr, double* loaddr, double4 a) { _mm256_storeu2_m128d(hiaddr, loaddr, a); }
+inline void storeu(float* hiaddr, float* loaddr, float8 a) { _mm256_storeu2_m128(hiaddr, loaddr, a); }
+inline void storeu(__m128i* hiaddr, __m128i* loaddr, __m256i a) { _mm256_storeu2_m128i(hiaddr, loaddr, a); }
+
+inline void store(double* mem_addr, long2 mask, double2 a) { _mm_maskstore_pd(mem_addr, mask, a); }
+inline void store(double* mem_addr, long4 mask, double4 a) { _mm256_maskstore_pd(mem_addr, mask, a); }
+inline void store(float* mem_addr, int4 mask, float4 a) { _mm_maskstore_ps(mem_addr, mask, a); }
+inline void store(float* mem_addr, int8 mask, float8 a) { _mm256_maskstore_ps(mem_addr, mask, a); }
+
+// set
+
+inline double4 set(double2 hi, double2 lo) { return _mm256_set_m128d(hi, lo); }
+inline double4 set(double e3, double e2, double e1, double e0) { return _mm256_set_pd(e3, e2, e1, e0); }
+inline double4 setr(double2 hi, double2 lo) { return _mm256_setr_m128d(hi, lo); }
+inline double4 setr(double e3, double e2, double e1, double e0) { return _mm256_setr_pd(e3, e2, e1, e0); }
+inline double4 set(double a) { return _mm256_set1_pd(a); }
+template <> double4 setzero<double4>() { return _mm256_setzero_pd(); }
+
+inline float8 set(float4 hi, float4 lo) { return _mm256_set_m128(hi, lo); }
+inline float8 set(float e3, float e2, double e1, double e0) { return _mm256_set_ps(e3, e2, e1, e0); }
+inline float8 setr(float4 hi, float4 lo) { return _mm256_setr_m128(hi, lo); }
+inline float8 setr(float e3, float e2, double e1, double e0) { return _mm256_setr_ps(e3, e2, e1, e0); }
+inline float8 set(float a) { float _mm256_set1_ps(a); }
+template <> float8 setzero<float8>() { return _mm256_setzero_ps(); }
 
 /*
 inline double4 operator+(double4 a, double4 b) { return _mm256_add_pd(a, b); }
